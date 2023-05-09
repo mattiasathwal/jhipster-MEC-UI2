@@ -1,0 +1,76 @@
+entity Device {
+  name String,
+  colour String required pattern(/[a-zA-Z]+/),
+  memory Float min(0) max(1000) required,
+  salesChannel SalesChannel required,
+  paymentType PaymentType required pattern(/Device Finance|Contract Handset/)
+}
+
+entity Tariff {
+  name String,
+  type TariffType,
+  length TariffLength,
+  tier TariffTier required,
+  offerId String required min(6) max(12) pattern(/[0-9]+/),
+  socCode String required min(6) max(12) pattern(/[a-zA-Z0-9]+/),
+  paymentType PaymentType required,
+  effectiveDate LocalDate required,
+  chargeCode String required,
+  salesChannel SalesChannel required,
+  lineOfBusiness LineOfBusiness required
+}
+
+entity AddOn {
+  name String,
+  dataAllowance String required pattern(/^(0|[1-9]\d*)(\.\d+)?(MB|GB)$/)
+  dataRoamingAllowance String required pattern(/^(0|[1-9]\d*)(\.\d+)?(MB|GB)$/)
+}
+
+enum TariffType {
+  SIMO,
+  DeviceFinance,
+  Tricolore,
+  MobileBroadband,
+  HomeBroadband
+}
+
+enum TariffLength {
+  OneMonth,
+  TwelveMonths,
+  TwentyFourMonths
+}
+
+enum PaymentType {
+  Prepaid,
+  Postpaid,
+  DeviceFinance,
+  ContractHandset
+}
+
+enum SalesChannel {
+  CallCentre,
+  SelfServe,
+  Retail,
+  Dealer,
+  SFDC,
+  RetailDesktop,
+  DealerDesktop,
+  Digital
+}
+
+enum TariffTier {
+  Standard,
+  Plus,
+  Premium
+}
+
+enum LineOfBusiness {
+  Mobile,
+  MBB,
+  HBB
+}
+
+relationship ManyToMany {
+  Device{productCatalogue(lineOfBusiness)} to Tariff{productCatalogue(lineOfBusiness)},
+  Tariff{productCatalogue} to AddOn
+}
